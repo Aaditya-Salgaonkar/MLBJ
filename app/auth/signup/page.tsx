@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "../../../lib/supabase";
 import { FaArrowLeft, FaGithub, FaGoogle, FaUserAlt } from "react-icons/fa";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -104,12 +104,6 @@ export default function SignupPage() {
               className="flex-1 py-2 border border-secondary/70 rounded-lg flex justify-center items-center gap-2 text-sm font-medium bg-secondary/30 hover:bg-secondary/10 transition"
             >
               <FaGoogle /> Google
-            </button>
-            <button
-              onClick={() => handleOAuth("github")}
-              className="flex-1 py-2 border border-secondary/70 rounded-lg flex justify-center items-center gap-2 text-sm font-medium bg-secondary/30 hover:bg-secondary/10 transition"
-            >
-              <FaGithub /> GitHub
             </button>
           </div>
 

@@ -44,8 +44,8 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-[#F5F5F5] flex items-center justify-center relative overflow-hidden font-sans">
       {/* Themed Background Glow */}
-      <div className="absolute -top-20 -left-32 w-[600px] h-[600px] bg-[#A03623] opacity-10 blur-[120px] rounded-full z-0" />
-      <div className="absolute bottom-[-60px] -right-10 w-[500px] h-[500px] bg-slate-400 opacity-20 blur-[100px] rounded-full z-0" />
+      <div className="absolute -top-20 -left-32 w-60 h-60 bg-[#A03623] opacity-10 blur-[120px] rounded-full z-0" />
+      <div className="absolute -bottom-60 -right-10 w-50 h-50 bg-slate-400 opacity-20 blur-[100px] rounded-full z-0" />
 
       <motion.div
         initial={{ scale: 0.95, opacity: 0 }}
@@ -86,13 +86,7 @@ export default function Login() {
               onClick={() => handleOAuth("google")}
               className="flex-1 py-2.5 border border-slate-200 rounded-lg flex justify-center items-center gap-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all"
             >
-              <FaGoogle className="text-red-500" /> Google
-            </button>
-            <button
-              onClick={() => handleOAuth("github")}
-              className="flex-1 py-2.5 border border-slate-200 rounded-lg flex justify-center items-center gap-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all"
-            >
-              <FaGithub className="text-slate-900" /> GitHub
+              <FaGoogle/> Google
             </button>
           </div>
 
@@ -118,13 +112,14 @@ export default function Login() {
             )}
 
             {/* Login Button */}
+            <Link href="/dashboard">
             <button
               onClick={handleOTPLogin}
               disabled={loading || !email}
               className="w-full py-3 text-sm md:text-base font-bold text-white rounded-lg bg-[#A03623] hover:bg-[#8a2e1e] active:scale-[0.98] transition-all shadow-md shadow-[#A03623]/20 disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              {loading ? "Sending Code..." : "Secure Login"}
-            </button>
+              {loading ? "Sending Code..." : "Login"}
+            </button></Link>
           </div>
 
           <p className="mt-8 text-xs text-center text-slate-500">

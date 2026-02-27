@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "../../../lib/supabase";
 import { motion } from "framer-motion";
 import Image from "next/image";
 
@@ -69,7 +69,7 @@ export default function AuthCallbackPage() {
         }
       }
 
-      router.replace("/");
+      router.replace("/dashboard");
     };
 
     checkSession();
