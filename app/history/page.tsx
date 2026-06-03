@@ -203,7 +203,7 @@ export default function HistoryPage() {
 
                 {/* Similar Past Judgments */}
                 <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                  <h3 className="text-sm font-bold text-slate-900 mb-4">Similar Past Judgments</h3>
+                  <h3 className="text-sm font-bold text-slate-900 mb-4">Similar Past Cases</h3>
                   <div className="space-y-3">
                     {selectedCase.similarJudgments.map((caseItem, idx) => (
                       <div key={idx} className="p-4 rounded-xl border border-slate-100 bg-slate-50/50 hover:bg-slate-50 transition-colors flex gap-4">
