@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Sidebar from "../../components/Sidebar";
+import { supabase } from "../../lib/supabase"; // Ensure this import points to your Supabase client setup
 
 export default function JudicioDashboard() {
   const [isLoading, setIsLoading] = useState(false);
@@ -69,7 +70,8 @@ export default function JudicioDashboard() {
         body: JSON.stringify({ query: finalQuery, top_k: 10 }),
       });
       const searchData = await searchRes.json();
-      setSimilarCases(searchData.results || []);
+      const fetchedCases = searchData.results || [];
+      setSimilarCases(fetchedCases);
 
       // 2. Fire Case Summarization Request (/summarize)
       const summaryRes = await fetch("http://127.0.0.1:8000/summarize/text", {
@@ -78,7 +80,8 @@ export default function JudicioDashboard() {
         body: JSON.stringify({ query: finalQuery }),
       });
       const summaryJson = await summaryRes.json();
-      setSummaryData(summaryJson.result || null);
+      const fetchedSummary = summaryJson.result || null;
+      setSummaryData(fetchedSummary);
 
       // 3. Fire Case Outcome Prediction Request (/predict)
       const predictRes = await fetch("http://127.0.0.1:8000/predict/text", {
@@ -91,8 +94,23 @@ export default function JudicioDashboard() {
 
       setCurrentIndex(0);
       setHasProcessed(true);
+
+      // 4. Log Entire Transaction to Supabase search_history Table
+      const { data: authData } = await supabase.auth.getUser();
+      if (authData?.user) {
+        await supabase.from("search_history").insert({
+          user_id: authData.user.id,
+          query_text: finalQuery,
+          results_output: {
+            title: caseTitle || "Untitled Analysis",
+            similar_cases: fetchedCases,
+            summary: fetchedSummary,
+            prediction: predictJson || null,
+          },
+        });
+      }
     } catch (err) {
-      console.error("Pipeline pipeline invocation failed:", err);
+      console.error("Pipeline invocation failed:", err);
     } finally {
       setIsLoading(false);
     }
@@ -229,7 +247,7 @@ export default function JudicioDashboard() {
                           disabled={currentIndex === 0}
                           className="px-4 py-2 bg-slate-100 rounded-lg text-sm font-semibold disabled:opacity-40"
                         >
-                          ← Previous Record
+                          &larr; Previous Record
                         </button>
                         <span className="text-sm font-bold text-slate-600">Indexed Index Match {currentIndex + 1} of {similarCases.length}</span>
                         <button
@@ -237,7 +255,7 @@ export default function JudicioDashboard() {
                           disabled={currentIndex === similarCases.length - 1}
                           className="px-4 py-2 bg-slate-100 rounded-lg text-sm font-semibold disabled:opacity-40"
                         >
-                          Next Record →
+                          Next Record &rarr;
                         </button>
                       </div>
 

@@ -112,14 +112,13 @@ export default function Login() {
             )}
 
             {/* Login Button */}
-            <Link href="/dashboard">
             <button
               onClick={handleOTPLogin}
               disabled={loading || !email}
               className="w-full py-3 text-sm md:text-base font-bold text-white rounded-lg bg-[#A03623] hover:bg-[#8a2e1e] active:scale-[0.98] transition-all shadow-md shadow-[#A03623]/20 disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {loading ? "Sending Code..." : "Login"}
-            </button></Link>
+            </button>
           </div>
 
           <p className="mt-8 text-xs text-center text-slate-500">

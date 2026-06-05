@@ -1,25 +1,75 @@
 "use client";
 
-import React, { useState } from "react";
-import Sidebar from "../../components/Sidebar"; // Adjust path as needed
+import React, { useEffect, useState } from "react";
+import Sidebar from "../../components/Sidebar";
+import { supabase } from "../../lib/supabase";
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("Profile");
-
-  // Mock Data
+  const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState({
-    firstName: "Jane",
-    lastName: "Doe",
-    email: "jane.doe@judiciary.gov",
-    role: "Chief Magistrate",
-    phone: "+1 (555) 123-4567",
+    firstName: "",
+    lastName: "",
+    email: "",
+    role: "",
+    phone: "",
   });
 
   const [notifications, setNotifications] = useState({
     caseUpdates: true,
   });
 
-  const tabs = ["Profile", "Notifications", "Security", "Preferences"];
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      const { data: authData } = await supabase.auth.getUser();
+      if (!authData.user) return;
+
+      const { data, error } = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", authData.user.id)
+        .single();
+
+      if (data && !error) {
+        setProfile({
+          firstName: data.name?.split(" ")[0] || "",
+          lastName: data.name?.split(" ").slice(1).join(" ") || "",
+          email: data.email || "",
+          role: data.role || "Chief Magistrate",
+          phone: data.phone || "",
+        });
+      }
+      setLoading(false);
+    };
+
+    fetchUserProfile();
+  }, []);
+
+  const handleSaveChanges = async () => {
+    const { data: authData } = await supabase.auth.getUser();
+    if (!authData.user) return;
+
+    const fullName = `${profile.firstName} ${profile.lastName}`.trim();
+
+    const { error } = await supabase
+      .from("users")
+      .update({
+        name: fullName,
+        email: profile.email,
+        phone: profile.phone,
+      })
+      .eq("id", authData.user.id);
+
+    if (error) {
+      alert("Error updating profile: " + error.message);
+    } else {
+      alert("Profile updated successfully!");
+    }
+  };
+
+  const tabs = ["Profile"];
+
+
 
   return (
     <div className="flex h-screen bg-[#f8fafc] overflow-hidden">
@@ -62,9 +112,6 @@ export default function SettingsPage() {
                     <h3 className="text-lg font-bold text-slate-900 border-b border-slate-100 pb-4">
                   Personal Information
                 </h3>
-                  <button className="px-6 py-3 bg-gradient-to-r from-[#dc5c45] via-[#A03623] to-[#9c2c18] text-white text-sm font-bold rounded-xl shadow-md shadow-[#dc5c45]/20 hover:shadow-lg transition-all">
-                    Save Changes
-                  </button>
                 </div>
                 <div className="grid grid-cols-2 gap-6">
                   <div>
@@ -100,80 +147,10 @@ export default function SettingsPage() {
                       className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#dc5c45]/20 focus:border-[#dc5c45] transition-all"
                     />
                   </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-                      Role / Designation
-                    </label>
-                    <input
-                      type="text"
-                      value={profile.role}
-                      
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-100 text-slate-500 cursor-not-allowed"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-                      Phone Number
-                    </label>
-                    <input
-                      type="tel"
-                      value={profile.phone}
-                      onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#dc5c45]/20 focus:border-[#dc5c45] transition-all"
-                    />
-                  </div>
-                </div>
-               
-              </div>
-            )}
-
-            {activeTab === "Notifications" && (
-              <div className="space-y-6">
-                <h3 className="text-lg font-bold text-slate-900 border-b border-slate-100 pb-4">
-                  Notification Preferences
-                </h3>
-                <div className="space-y-4">
-                  {Object.entries(notifications).map(([key, value]) => (
-                    <div key={key} className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100">
-                      <div>
-                        <p className="font-semibold text-slate-800 capitalize">
-                          {key.replace(/([A-Z])/g, ' $1').trim()}
-                        </p>
-                        <p className="text-xs text-slate-500">
-                          Receive notifications regarding {key.replace(/([A-Z])/g, ' $1').toLowerCase()}.
-                        </p>
-                      </div>
-                      <button
-                        onClick={() => setNotifications({ ...notifications, [key]: !value })}
-                        className={`w-12 h-6 rounded-full transition-colors relative ${
-                          value ? "bg-[#dc5c45]" : "bg-slate-300"
-                        }`}
-                      >
-                        <span
-                          className={`absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform ${
-                            value ? "translate-x-6" : "translate-x-0"
-                          }`}
-                        />
-                      </button>
-                    </div>
-                  ))}
                 </div>
               </div>
             )}
 
-            {(activeTab === "Security" || activeTab === "Preferences") && (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4 text-slate-400">
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-2">Module Under Construction</h3>
-                <p className="text-sm text-slate-500 max-w-sm">
-                  The {activeTab} settings module is currently being updated. Please check back later.
-                </p>
-              </div>
-            )}
           </div>
         </div>
       </main>

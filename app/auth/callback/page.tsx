@@ -82,7 +82,7 @@ export default function AuthCallbackPage() {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.4 }}
-        className="relative z-10 bg-surface backdrop-blur-lg py-10 rounded-3xl shadow-2xl border border-border max-w-md w-70 md:w-full text-center"
+        className="relative z-10 bg-surface backdrop-blur-lg py-10 rounded-3xl shadow-2xl border border-gray-200 max-w-md w-70 md:w-full text-center"
       >
         <div className="flex flex-col items-center justify-center">
           <div className="rounded-full">
@@ -107,7 +107,7 @@ export default function AuthCallbackPage() {
             {[...Array(3)].map((_, i) => (
               <motion.span
                 key={i}
-                className="w-5 h-5 brightness-150 bg-linear-to-br from-[#2200cd] to-[#2e147e] rounded-full"
+                className="w-5 h-5 brightness-150 bg-linear-to-br from-[#cd5900] to-[#f18a03] rounded-full"
                 animate={{ opacity: [0.2, 1, 0.2] }}
                 transition={{
                   duration: 1,
