@@ -64,7 +64,7 @@ export default function JudicioDashboard() {
 
     try {
       // 1. Fire Similar Cases Search Request (/retrieval)
-      const searchRes = await fetch("http://127.0.0.1:8000/retrieval/search/hybrid/query", {
+      const searchRes = await fetch("https://f21d-210-212-162-140.ngrok-free.app/retrieval/search/hybrid/query", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query: finalQuery, top_k: 10 }),
@@ -74,17 +74,18 @@ export default function JudicioDashboard() {
       setSimilarCases(fetchedCases);
 
       // 2. Fire Case Summarization Request (/summarize)
-      const summaryRes = await fetch("http://127.0.0.1:8000/summarize/text", {
+      const summaryRes = await fetch("https://f21d-210-212-162-140.ngrok-free.app/summarize/text", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query: finalQuery }),
       });
       const summaryJson = await summaryRes.json();
       const fetchedSummary = summaryJson.result || null;
+      console.log("Fetched Summary:", summaryJson);
       setSummaryData(fetchedSummary);
 
       // 3. Fire Case Outcome Prediction Request (/predict)
-      const predictRes = await fetch("http://127.0.0.1:8000/predict/text", {
+      const predictRes = await fetch("https://f21d-210-212-162-140.ngrok-free.app/predict/text", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: finalQuery }),
@@ -218,19 +219,19 @@ export default function JudicioDashboard() {
                   onClick={() => setActiveTab("search")}
                   className={`pb-3 transition border-b-2 ${activeTab === "search" ? "border-[#A03623] text-[#A03623]" : "border-transparent text-slate-400"}`}
                 >
-                  Similar Cases Match ({similarCases.length})
+                  Similar Cases Retrieved ({similarCases.length})
                 </button>
                 <button
                   onClick={() => setActiveTab("summary")}
                   className={`pb-3 transition border-b-2 ${activeTab === "summary" ? "border-[#A03623] text-[#A03623]" : "border-transparent text-slate-400"}`}
                 >
-                  Gemini Structured Summary
+                  Case Summarized
                 </button>
                 <button
                   onClick={() => setActiveTab("prediction")}
                   className={`pb-3 transition border-b-2 ${activeTab === "prediction" ? "border-[#A03623] text-[#A03623]" : "border-transparent text-slate-400"}`}
                 >
-                  Outcome Classification Models
+                  Case Predictions
                 </button>
               </div>
 
@@ -282,19 +283,49 @@ export default function JudicioDashboard() {
 
               {activeTab === "summary" && (
                 <div className="bg-white p-8 rounded-2xl border shadow-sm space-y-6">
-                  <h3 className="text-xl font-bold text-slate-900 border-b pb-3">AI Case Abstract</h3>
+                  <h3 className="text-xl font-bold text-slate-900 border-b pb-3">Case Summary</h3>
                   {summaryData ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-3">
-                        <h4 className="text-sm font-black text-[#A03623] uppercase tracking-wider">Extracted Material Facts</h4>
+                        <h4 className="text-sm font-black text-[#A03623] uppercase tracking-wider">Facts</h4>
                         <ul className="list-disc pl-5 space-y-2 text-slate-700 text-sm">
                           {summaryData.Facts?.map((item: string, idx: number) => <li key={idx}>{item}</li>) || <li>No historical facts extracted.</li>}
                         </ul>
                       </div>
                       <div className="space-y-3">
-                        <h4 className="text-sm font-black text-[#A03623] uppercase tracking-wider">Identified Jurisprudential Issues</h4>
+                        <h4 className="text-sm font-black text-[#A03623] uppercase tracking-wider">Issues</h4>
                         <ul className="list-disc pl-5 space-y-2 text-slate-700 text-sm">
                           {summaryData.Issues?.map((item: string, idx: number) => <li key={idx}>{item}</li>) || <li>No focal legal issues identified.</li>}
+                        </ul>
+                      </div>
+                      <div className="space-y-3">
+                        <h4 className="text-sm font-black text-[#A03623] uppercase tracking-wider">Conclusion</h4>
+                        <ul className="list-disc pl-5 space-y-2 text-slate-700 text-sm">
+                          {summaryData.Conclusion?.map((item: string, idx: number) => <li key={idx}>{item}</li>) || <li>No conclusion available.</li>}
+                        </ul>
+                      </div>
+                      <div className="space-y-3">
+                        <h4 className="text-sm font-black text-[#A03623] uppercase tracking-wider">IPC Sections</h4>
+                        <ul className="list-disc pl-5 space-y-2 text-slate-700 text-sm">
+                          {summaryData.IPC_Sections?.map((item: string, idx: number) => <li key={idx}>{item}</li>) || <li>No focal legal issues identified.</li>}
+                        </ul>
+                      </div>
+                      <div className="space-y-3">
+                        <h4 className="text-sm font-black text-[#A03623] uppercase tracking-wider">Court Reasoning</h4>
+                        <ul className="list-disc pl-5 space-y-2 text-slate-700 text-sm">
+                          {summaryData.Court_Reasoning?.map((item: string, idx: number) => <li key={idx}>{item}</li>) || <li>No focal legal issues identified.</li>}
+                        </ul>
+                      </div>
+                      <div className="space-y-3">
+                        <h4 className="text-sm font-black text-[#A03623] uppercase tracking-wider">Precedent Analysis</h4>
+                        <ul className="list-disc pl-5 space-y-2 text-slate-700 text-sm">
+                          {summaryData.Precedent_Analysis?.map((item: string, idx: number) => <li key={idx}>{item}</li>) || <li>No focal legal issues identified.</li>}
+                        </ul>
+                      </div>
+                      <div className="space-y-3">
+                        <h4 className="text-sm font-black text-[#A03623] uppercase tracking-wider">Argument by Petitioner</h4>
+                        <ul className="list-disc pl-5 space-y-2 text-slate-700 text-sm">
+                          {summaryData.Argument_by_Petitioner?.map((item: string, idx: number) => <li key={idx}>{item}</li>) || <li>No focal legal issues identified.</li>}
                         </ul>
                       </div>
                     </div>
@@ -306,39 +337,68 @@ export default function JudicioDashboard() {
 
               {activeTab === "prediction" && (
                 <div className="bg-white p-8 rounded-2xl border shadow-sm space-y-6">
-                  <h3 className="text-xl font-bold text-slate-900 border-b pb-3">Outcome Model Probability Estimations</h3>
+                  <h3 className="text-xl font-bold text-slate-900 border-b pb-3">Case Predictions</h3>
                   {predictionData ? (
-                    <div className="max-w-md space-y-6">
-                      <div className="p-6 rounded-xl border bg-slate-50 flex items-center justify-between">
-                        <div>
-                          <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Predicted Decision Label</p>
-                          <p className="text-3xl font-black text-slate-900 mt-1">{predictionData.label}</p>
+                    <div className="space-y-8">
+                      {/* Top-Level Probability Estimations */}
+                      <div className="max-w-md space-y-6">
+                        <div className="p-6 rounded-xl border bg-slate-50 flex items-center justify-between">
+                          <div>
+                            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Predicted Decision Label</p>
+                            <p className="text-3xl font-black text-slate-900 mt-1 capitalize">{predictionData.label}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Confidence Index</p>
+                            <p className="text-3xl font-black text-[#A03623] mt-1">{(predictionData.confidence * 100).toFixed(1)}%</p>
+                          </div>
                         </div>
-                        <div className="text-right">
-                          <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Confidence Index</p>
-                          <p className="text-3xl font-black text-[#A03623] mt-1">{(predictionData.confidence * 100).toFixed(1)}%</p>
+
+                        <div className="space-y-2">
+                          <p className="text-xs font-bold text-slate-500 uppercase">Calculated Probability Threshold Weight Distribution</p>
+                          <div className="w-full bg-slate-100 h-4 rounded-full overflow-hidden flex">
+                            <div
+                              style={{ width: `${predictionData.probabilities[0] * 100}%` }}
+                              className="bg-slate-400 transition-all duration-500"
+                              title="Denied probability mapping weight"
+                            />
+                            <div
+                              style={{ width: `${predictionData.probabilities[1] * 100}%` }}
+                              className="bg-gradient-to-r from-[#dc5c45] to-[#9c2c18] transition-all duration-500"
+                              title="Granted probability mapping weight"
+                            />
+                          </div>
+                          <div className="flex justify-between text-xs font-mono text-slate-400 pt-1">
+                            <span>Dismissed/Denied: {(predictionData.probabilities[0] * 100).toFixed(1)}%</span>
+                            <span>Approved/Granted: {(predictionData.probabilities[1] * 100).toFixed(1)}%</span>
+                          </div>
                         </div>
                       </div>
 
-                      <div className="space-y-2">
-                        <p className="text-xs font-bold text-slate-500 uppercase">Calculated Probability Threshold Weight Distribution</p>
-                        <div className="w-full bg-slate-100 h-4 rounded-full overflow-hidden flex">
-                          <div 
-                            style={{ width: `${predictionData.probabilities[0] * 100}%` }} 
-                            className="bg-slate-400 transition-all duration-500"
-                            title="Denied probability mapping weight"
-                          />
-                          <div 
-                            style={{ width: `${predictionData.probabilities[1] * 100}%` }} 
-                            className="bg-gradient-to-r from-[#dc5c45] to-[#9c2c18] transition-all duration-500"
-                            title="Granted probability mapping weight"
-                          />
+                      {/* Sentence-by-Sentence Explanation Block */}
+                      {predictionData.explanation && predictionData.explanation.length > 0 && (
+                        <div className="space-y-4 pt-4 border-t border-slate-100">
+                          <h4 className="text-sm font-black text-[#A03623] uppercase tracking-wider">Prediction Explanations</h4>
+                          <div className="grid grid-cols-1 gap-3">
+                            {predictionData.explanation.map((item: any, idx: number) => (
+                              <div key={idx} className="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                                <p className="text-sm text-slate-700 flex-1">{item.sentence}</p>
+                                <div className="flex flex-col items-end shrink-0 min-w-[140px]">
+                                  <span 
+                                    className={`text-xs font-bold uppercase tracking-wide ${
+                                      item.direction === "Supports Prediction" 
+                                        ? "text-emerald-600" 
+                                        : "text-rose-600"
+                                    }`}
+                                  >
+                                    {item.direction}
+                                  </span>
+                                  <span className="text-xs font-mono text-slate-400 mt-1">Score: {item.score.toFixed(4)}</span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                        <div className="flex justify-between text-xs font-mono text-slate-400 pt-1">
-                          <span>Dismissed/Denied: {(predictionData.probabilities[0] * 100).toFixed(1)}%</span>
-                          <span>Approved/Granted: {(predictionData.probabilities[1] * 100).toFixed(1)}%</span>
-                        </div>
-                      </div>
+                      )}
                     </div>
                   ) : (
                     <div className="text-slate-400 text-center py-6">Probability parameters undefined. Confirm text token sizing thresholds.</div>
