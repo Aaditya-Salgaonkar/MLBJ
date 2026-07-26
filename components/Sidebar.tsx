@@ -72,13 +72,19 @@ export default function Sidebar() {
       <div className="border-t border-slate-200 pt-6 flex flex-col gap-3">
         <div className="flex items-center gap-4  rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all cursor-pointer">
           <div className="w-11 h-11 bg-gradient-to-tr from-[#dc5c45] via-[#A03623] to-[#9c2c18] rounded-full flex items-center justify-center text-white font-bold shadow-md shadow-indigo-500/20">
-            <Image
-            src={user?.avatar_url || "/brand/avatar-placeholder.png"}
-            width={40}
-            height={40}
-            alt="User Avatar"
-            className="rounded-full object-cover"
-            />
+            {user?.avatar_url ? (
+              <Image
+                src={user.avatar_url}
+                width={40}
+                height={40}
+                alt="User Avatar"
+                className="rounded-full object-cover"
+              />
+            ) : (
+              <span className="text-sm font-bold text-white">
+                {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
+              </span>
+            )}
           </div>
           <div className="overflow-hidden">
             <p className="font-semibold text-xs text-slate-800 truncate">
